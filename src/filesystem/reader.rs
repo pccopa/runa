@@ -2,9 +2,16 @@ use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 
-fn walk_tree<P: AsRef<Path>>(dir_path: P, base: &Path) -> io::Result<()> {
-    let entries = fs::read_dir(dir_path)?;
+use crate::collection::{FileProcessor, ProcessorType};
 
+const RUNA_MARKER: &str = ".runa";
+
+fn dir_has_runa_marker(dir: &Path) -> bool {
+    dir.join(RUNA_MARKER).is_file()
+}
+
+fn process_files_in_dir(dir: &Path, base: &Path) -> io::Result<()> {
+    let entries = fs::read_dir(dir)?;
     let mut items: Vec<_> = entries.collect::<Result<_, _>>()?;
     items.sort_by_key(|e| e.file_name());
 
@@ -15,10 +22,44 @@ fn walk_tree<P: AsRef<Path>>(dir_path: P, base: &Path) -> io::Result<()> {
         let rel_str = rel.display().to_string();
 
         if metadata.is_file() {
-            println!("{}", rel_str);
-        } else if metadata.is_dir() {
-            println!("{}/", rel_str);
-            walk_tree(&path, base)?;
+            let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
+            match ProcessorType::all()
+                .into_iter()
+                .find(|p| p.matches_extension(ext))
+            {
+                Some(processor) => {
+                    println!("{}", rel_str);
+                    let content = fs::read_to_string(&path).unwrap_or_default();
+                    processor.validate(&content);
+                }
+                None => {}
+            }
+        }
+    }
+    Ok(())
+}
+
+fn walk_tree<P: AsRef<Path>>(dir_path: P, base: &Path) -> io::Result<()> {
+    let dir = dir_path.as_ref();
+
+    let is_project = dir_has_runa_marker(dir);
+    if is_project {
+        let name = dir.strip_prefix(base).unwrap_or(dir);
+        println!("{}/", name.display());
+        process_files_in_dir(dir, dir)?;
+    }
+
+    let entries = fs::read_dir(dir)?;
+
+    for entry in entries {
+        let entry = entry?;
+        let path = entry.path();
+        let metadata = entry.metadata()?;
+
+        if metadata.is_dir() {
+            if !is_project || dir_has_runa_marker(&path) {
+                walk_tree(&path, base)?;
+            }
         }
     }
 
@@ -30,7 +71,11 @@ pub fn read_files<P: AsRef<Path>>(dir_path: P) -> io::Result<()> {
         .as_ref()
         .canonicalize()
         .unwrap_or_else(|_| PathBuf::from(dir_path.as_ref()));
-    println!("{}/", base.display());
+
+    if !dir_has_runa_marker(&base) {
+        println!("{}/ no es proyecto Runa", base.display());
+        return Ok(());
+    }
     walk_tree(&base, &base)?;
     Ok(())
 }
