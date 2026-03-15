@@ -18,8 +18,8 @@ fn process_files_in_dir(dir: &Path, base: &Path) -> io::Result<()> {
     for entry in items {
         let path = entry.path();
         let metadata = entry.metadata()?;
-        let rel = path.strip_prefix(base).unwrap_or(&path);
-        let rel_str = rel.display().to_string();
+        // let rel = path.strip_prefix(base).unwrap_or(&path);
+        // let rel_str = rel.display().to_string();
 
         if metadata.is_file() {
             let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
@@ -28,9 +28,7 @@ fn process_files_in_dir(dir: &Path, base: &Path) -> io::Result<()> {
                 .find(|p| p.matches_extension(ext))
             {
                 Some(processor) => {
-                    println!("{}", rel_str);
-                    let content = fs::read_to_string(&path).unwrap_or_default();
-                    processor.validate(&content);
+                    processor.validate(&path);
                 }
                 None => {}
             }
