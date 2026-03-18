@@ -59,3 +59,10 @@ pub enum MetadataError {
     WrongMethod,
 
 }
+
+pub struct ValidMetadata {
+    runa: String,
+    version: String,
+    method: Method,
+    order: i16,
+}

@@ -2,7 +2,8 @@ use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 
-use crate::collection::{FileProcessor, ProcessorType};
+use crate::collection::{get_file_processor, validate};
+use crate::models::{FileMetadata, ValidMetadata};
 
 const RUNA_MARKER: &str = ".runa";
 
@@ -22,16 +23,21 @@ fn process_files_in_dir(dir: &Path, base: &Path) -> io::Result<()> {
         // let rel_str = rel.display().to_string();
 
         if metadata.is_file() {
-            let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
-            match ProcessorType::all()
-                .into_iter()
-                .find(|p| p.matches_extension(ext))
-            {
-                Some(processor) => {
-                    processor.validate(&path);
-                }
-                None => {}
+            match validate(&path) {
+                Ok(FileMetadata) => { println! ("Valid file: {}", path.display()) }
+                Err(_) => { println! ("Invalid file: {}", path.display()) }
             }
+            // let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
+            // match get_file_processor(&path) {
+            //     None => { println! ("No strategy found for file type. Ignoring."); }
+            //     Some(processor) => {
+            //         let result = processor.validate(&path);
+            //         match result {
+            //             Ok(r) => { println! ("Valid file: {}", path.display()) }
+            //             Err(e) => { println! ("{}", e);}
+            //         }
+            //     }
+            // };
         }
     }
     Ok(())
