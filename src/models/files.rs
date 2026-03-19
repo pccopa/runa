@@ -1,6 +1,6 @@
 use crate::models::Method;
 use serde::de::{self, Deserializer};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
 use thiserror::Error;
 
@@ -58,11 +58,4 @@ pub enum MetadataError {
     #[error("Unsupported method")]
     WrongMethod,
 
-}
-
-pub struct ValidMetadata {
-    runa: String,
-    version: String,
-    method: Method,
-    order: i16,
 }

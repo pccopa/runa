@@ -8,6 +8,7 @@ pub use toml::TomlProcessor;
 pub use yaml::YamlProcessor;
 use std::fs::File as StdFile;
 use std::io::{BufRead, BufReader};
+use log::debug;
 use crate::models::{FileMetadata, MetadataError};
 
 pub trait FileProcessor {
@@ -29,15 +30,15 @@ pub fn get_file_processor (path: &Path) -> Option<Processor> {
 pub fn validate(path: &Path) -> Result<FileMetadata, MetadataError> {
     match read_metadata(path) {
         Ok(Some(metadata)) => {
-            println!("Valid file for Runa project");
+            debug!("Valid file for Runa project");
             Ok(metadata)
         },
         Ok(None) => {
-            println!("Invalid file for Runa project");
+            debug!("Invalid file for Runa project");
             Err(MetadataError::InvalidProject)
         },
         Err(err)=> {
-            println!("Invalid file metadata {:?}", err);
+            debug!("Invalid file metadata {:?}", err);
             Err(MetadataError::InvalidMetadata)
         }
     }
@@ -65,7 +66,7 @@ pub fn read_metadata(path: &Path) -> std::io::Result<Option<FileMetadata>> {
 fn parse_metadata(line: &str, processor: Option<Processor>) -> Option<FileMetadata> {
     const RUNA_KEY: &str = "# Runa Project:";
     if !line.starts_with(RUNA_KEY) {
-        println! ("No cumple con RUNA_KEY: {}", line);
+        debug! ("No cumple con RUNA_KEY: {}", line);
         return None;
     }
     let content = line.trim_start_matches(RUNA_KEY).trim();

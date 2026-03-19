@@ -1,7 +1,8 @@
+use std::fmt::Debug;
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
-
+use log::{debug, error, info};
 use crate::collection::validate;
 
 const RUNA_MARKER: &str = ".runa";
@@ -21,8 +22,11 @@ fn process_files_in_dir(dir: &Path, base: &Path) -> io::Result<()> {
 
         if metadata.is_file() {
             match validate(&path) {
-                Ok(FileMetadata) => { println! ("Valid file: {}", path.display()) }
-                Err(_) => { println! ("Invalid file: {}", path.display()) }
+                Ok(m) => {
+                    debug! ("Valid file: {}", path.display());
+                    info!("{:#?}", m);
+                }
+                Err(_) => { debug! ("Invalid file: {}", path.display()) }
             }
         }
     }
@@ -35,7 +39,7 @@ fn walk_tree<P: AsRef<Path>>(dir_path: P, base: &Path) -> io::Result<()> {
     let is_project = dir_has_runa_marker(dir);
     if is_project {
         let name = dir.strip_prefix(base).unwrap_or(dir);
-        println!("{}/", name.display());
+        debug!("{}/", name.display());
         process_files_in_dir(dir, dir)?;
     }
 
@@ -63,7 +67,7 @@ pub fn read_files<P: AsRef<Path>>(dir_path: P) -> io::Result<()> {
         .unwrap_or_else(|_| PathBuf::from(dir_path.as_ref()));
 
     if !dir_has_runa_marker(&base) {
-        println!("{}/ no es proyecto Runa", base.display());
+        debug!("{}/ no es proyecto Runa", base.display());
         return Ok(());
     }
     walk_tree(&base, &base)?;
