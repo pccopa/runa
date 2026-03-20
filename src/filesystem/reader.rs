@@ -27,8 +27,11 @@ fn process_files_in_dir(dir: &Path, base: &Path, tree: &mut Tree, dir_idx: usize
                 Ok(m) => {
                     debug! ("Valid file: {}", path.display());
                     info!("{:#?}", m);
-                    let nombre = path.file_name().unwrap().to_string_lossy().to_string();
-                    tree.add_node(Some(dir_idx), nombre, NodeType::File, Some(m));
+                    let nombre = path
+                        .file_name()
+                        .map(|n| n.to_string_lossy())
+                        .unwrap_or_else(|| "".into());;
+                    tree.add_node(Some(dir_idx), nombre.into_owned(), NodeType::File, Some(m));
                 }
                 Err(_) => { debug! ("Invalid file: {}", path.display()) }
             }
@@ -41,15 +44,18 @@ fn walk_tree<P: AsRef<Path>>(dir_path: P, base: &Path, tree: &mut Tree, parent: 
     let dir = dir_path.as_ref();
 
     let is_project = dir_has_runa_marker(dir);
-    let mut current_project_idx = parent;
+    let mut current_parent_idx = parent;
 
     if is_project {
         let name = dir.strip_prefix(base).unwrap_or(dir);
-        let directory = name.to_str().unwrap();
-        let dir_idx = tree.add_node(parent, directory.to_string(), NodeType::Directory, None);
+        let directory = name
+            .file_name()
+            .map(|n| n.to_string_lossy())
+            .unwrap_or_else(|| "".into());;
+        let dir_idx = tree.add_node(parent, directory.into_owned(), NodeType::Directory, None);
         debug!("{}/", name.display());
         process_files_in_dir(dir, dir, tree, dir_idx)?;
-        current_project_idx = Some(dir_idx);
+        current_parent_idx = Some(dir_idx);
     }
 
     let entries = fs::read_dir(dir)?;
@@ -61,7 +67,7 @@ fn walk_tree<P: AsRef<Path>>(dir_path: P, base: &Path, tree: &mut Tree, parent: 
 
         if metadata.is_dir() {
             if !is_project || dir_has_runa_marker(&path) {
-                walk_tree(&path, base, tree, current_project_idx)?;
+                walk_tree(&path, base, tree, current_parent_idx)?;
             }
         }
     }
