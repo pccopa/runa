@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use crate::models::Method;
 use serde::de::{self, Deserializer};
 use serde::{Deserialize, Serialize};
@@ -57,5 +58,50 @@ pub enum MetadataError {
     WrongFormat,
     #[error("Unsupported method")]
     WrongMethod,
+
+}
+
+#[derive(Debug)]
+pub struct Tree {
+    root: PathBuf,
+    files: Vec<Node>,
+}
+
+#[derive(Debug)]
+pub struct Node {
+    parent: Option<usize>,
+    children: Vec<usize>,
+    metadata: Option<FileMetadata>,
+    filename: String,
+    node_type: NodeType,
+}
+
+#[derive(Debug)]
+pub enum NodeType {
+    Directory,
+    File
+}
+
+impl Tree {
+    pub fn new (root: PathBuf) -> Self {
+        Self {
+            root, files: Vec::new()
+        }
+    }
+    pub fn add_node (&mut self, parent: Option<usize>, filename: String, node_type: NodeType, metadata: Option<FileMetadata>) -> usize {
+
+        let idx = self.files.len();
+        self.files.push(Node {
+            parent,
+            filename,
+            node_type,
+            metadata,
+            children: Vec::new(),
+        });
+        if let Some(parent_idx) = parent {
+            self.files[parent_idx].children.push(idx);
+        }
+        idx
+    }
 
 }
