@@ -1,4 +1,4 @@
-use log::error;
+use log::{error, info};
 use runa::filesystem::read_files;
 
 fn main() {
@@ -9,8 +9,12 @@ fn main() {
         .nth(1)
         .unwrap_or_else(|| ".".to_string());
 
-    if let Err(e) = read_files(base) {
-        error!("Error: {}", e);
-        std::process::exit(1);
+    let result = read_files(&base);
+    match result {
+        Ok(content) => { info!("{:#?}", content) },
+        Err(err) => {
+            error!("Error: {}", err);
+            std::process::exit(1);
+        }
     }
 }

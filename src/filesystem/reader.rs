@@ -75,18 +75,17 @@ fn walk_tree<P: AsRef<Path>>(dir_path: P, base: &Path, tree: &mut Tree, parent: 
     Ok(())
 }
 
-pub fn read_files<P: AsRef<Path>>(dir_path: P) -> io::Result<()> {
+pub fn read_files<P: AsRef<Path>>(dir_path: P) -> io::Result<Tree> {
     let base = dir_path
         .as_ref()
         .canonicalize()
         .unwrap_or_else(|_| PathBuf::from(dir_path.as_ref()));
 
+    let mut tree = Tree::new(base.clone());
     if !dir_has_runa_marker(&base) {
         debug!("{}/ no es proyecto Runa", base.display());
-        return Ok(());
+        return Ok(tree);
     }
-    let mut tree = Tree::new(base.clone());
     walk_tree(&base, &base, &mut tree, None)?;
-    info!("{:#?}", tree);
-    Ok(())
+    Ok(tree)
 }
