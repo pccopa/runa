@@ -20,3 +20,15 @@ Everything works naturally, like a file manager integrated with a repository. De
 
 From the beginning, Runa is intended to be 100% free, open-source, and completely ad-free.
 It’s a personal project, but everyone is invited to contribute, collaborate, or make donations to support its development.
+
+## Development (Tauri on Linux)
+
+The desktop shell needs WebKitGTK and related libraries. If `cargo` fails on `soup3-sys` or `javascriptcore-rs-sys`, install the [Tauri Linux prerequisites](https://v2.tauri.app/start/prerequisites/#linux) (Debian/Ubuntu example):
+
+```bash
+sudo apt update
+sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file \
+  libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev pkg-config
+```
+
+Then run `npm install` at the repo root and `npm run tauri:dev`.

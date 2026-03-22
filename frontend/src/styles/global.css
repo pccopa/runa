@@ -1,0 +1,199 @@
+/* -----------------------------------------------------------------------------
+   Variables semánticas: alineadas al prototipo HTML (stitch) + tokens runaUi
+   en src/ui/design-tokens.json. Los nombres largos facilitan consistencia;
+   los alias cortos (--bg, --accent) agilizan el maquetado en componentes.
+   ----------------------------------------------------------------------------- */
+
+:root {
+  color-scheme: dark;
+
+  /* ——— Alias cortos ——— */
+  --bg: var(--color-surface);
+  --bg-subtle: var(--color-surface-container-low);
+  --bg-elevated: var(--color-surface-container);
+  --text: var(--color-on-surface);
+  --text-muted: var(--color-on-surface-variant);
+  --accent: var(--color-primary);
+  --accent-strong: var(--color-on-primary-container);
+  --border-hairline: color-mix(in srgb, var(--color-outline-variant) 15%, transparent);
+
+  /* ——— Layout ——— */
+  --layout-topbar-height: 3.5rem;
+  --layout-sidebar-primary-width: 16rem;
+  --layout-sidebar-collapsed-width: 3.5rem;
+  --layout-tree-width: 20rem;
+  --layout-status-height: 2.25rem;
+  --radius-sm: 0.125rem;
+  --radius-md: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+
+  /* ——— Superficies (stitch / Material-like) ——— */
+  --color-background: #0b1326;
+  --color-surface: #0b1326;
+  --color-surface-dim: #0b1326;
+  --color-surface-container-lowest: #060e20;
+  --color-surface-container-low: #131b2e;
+  --color-surface-container: #171f33;
+  --color-surface-container-high: #222a3d;
+  --color-surface-container-highest: #2d3449;
+  --color-surface-variant: #2d3449;
+  --color-surface-bright: #31394d;
+
+  /* ——— Alta fidelidad (runaUi + mock) ——— */
+  --color-canvas-deepest: #0b0e14;
+  --color-panel-elevated: #151b26;
+  --color-card-surface: #1c2331;
+  --color-accent-cyan: #4fc3f7;
+
+  /* ——— Contenido ——— */
+  --color-on-background: #dae2fd;
+  --color-on-surface: #dae2fd;
+  --color-on-surface-variant: #c6c6cd;
+  --color-inverse-on-surface: #283044;
+  --color-inverse-surface: #dae2fd;
+
+  /* ——— Primarios / acentos ——— */
+  --color-primary: #7bd0ff;
+  --color-on-primary: #00354a;
+  --color-primary-container: #001a27;
+  --color-on-primary-container: #008abb;
+  --color-primary-fixed: #c4e7ff;
+  --color-primary-fixed-dim: #7bd0ff;
+  --color-inverse-primary: #00668a;
+  --color-surface-tint: #7bd0ff;
+
+  /* ——— Secundarios ——— */
+  --color-secondary: #b9c8de;
+  --color-on-secondary: #233143;
+  --color-secondary-container: #39485a;
+  --color-on-secondary-container: #a7b6cc;
+
+  /* ——— Terciarios (POST / acentos cálidos en el mock) ——— */
+  --color-tertiary: #ffb95f;
+  --color-on-tertiary: #472a00;
+  --color-tertiary-container: #251400;
+  --color-on-tertiary-container: #b47300;
+
+  /* ——— Contorno ——— */
+  --color-outline: #909097;
+  --color-outline-variant: #45464d;
+
+  /* ——— Error ——— */
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+
+  /* ——— Métodos HTTP (runaUi + paleta existente) ——— */
+  --color-http-get: #48bb78;
+  --color-http-get-bg: color-mix(in srgb, var(--color-http-get) 12%, transparent);
+  --color-http-post: #ed8936;
+  --color-http-post-bg: color-mix(in srgb, var(--color-http-post) 12%, transparent);
+  --color-http-put: #4299e1;
+  --color-http-put-bg: color-mix(in srgb, var(--color-http-put) 12%, transparent);
+  --color-http-patch: #9f7aea;
+  --color-http-patch-bg: color-mix(in srgb, var(--color-http-patch) 12%, transparent);
+  --color-http-delete: #f56565;
+  --color-http-delete-bg: color-mix(in srgb, var(--color-http-delete) 12%, transparent);
+
+  /* ——— Estado / barra inferior ——— */
+  --color-status-online: #68d391;
+  --color-performance-bar: #3182ce;
+
+  /* ——— Tipografía ——— */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --text-label: 0.6875rem;
+  --text-small: 0.75rem;
+  --text-body: 0.8125rem;
+  --text-title: 1.5rem;
+
+  /* ——— Sombras ——— */
+  --shadow-glow-primary: 0 0 80px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  background-color: var(--color-surface-container-low);
+  color: var(--color-on-surface);
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  vertical-align: middle;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-outline-variant) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: 10px;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Utilidades mínimas (sin framework CSS) */
+.u-uppercase-label {
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.u-focus-ring:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+  outline-offset: 2px;
+}

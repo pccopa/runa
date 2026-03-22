@@ -1,3 +1,4 @@
+pub mod bridge;
 pub mod collection;
 pub mod filesystem;
 pub mod git;

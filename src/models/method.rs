@@ -23,3 +23,18 @@ pub enum Method {
     #[serde(alias = "HEAD", alias = "head")]
     Head,
 }
+
+impl Method {
+    /// Etiqueta HTTP para UI (chips, curl, etc.).
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Method::Get => "GET",
+            Method::Post => "POST",
+            Method::Put => "PUT",
+            Method::Delete => "DELETE",
+            Method::Patch => "PATCH",
+            Method::Options => "OPTIONS",
+            Method::Head => "HEAD",
+        }
+    }
+}

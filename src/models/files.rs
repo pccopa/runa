@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use crate::models::Method;
 use serde::de::{self, Deserializer};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use serde_yaml::Value;
 use thiserror::Error;
 
@@ -26,10 +26,24 @@ pub struct FileMetadata {
 }
 
 impl FileMetadata {
+    /// Identificador/nombre mostrable del request en la UI (sidebar, pestañas, etc.).
+    pub fn runa(&self) -> &str {
+        &self.runa
+    }
+
+    pub fn method(&self) -> &Method {
+        &self.method
+    }
+
+    /// Orden relativo dentro de la carpeta (metadatos Runa).
+    pub fn display_order(&self) -> i16 {
+        self.order
+    }
+
     pub fn validate(&self) -> Result<(), MetadataError> {
-        if self.runa != "runa" {
-            return Err(MetadataError::InvalidProject);
-        }
+        // if self.runa != "runa" {
+        //     return Err(MetadataError::InvalidProject);
+        // }
 
         if self.version != "1" {
             return Err(MetadataError::UnsupportedVersion);
@@ -76,6 +90,37 @@ pub struct Node {
     node_type: NodeType,
 }
 
+impl Node {
+    pub fn filename(&self) -> &str {
+        &self.filename
+    }
+
+    pub fn parent(&self) -> Option<usize> {
+        self.parent
+    }
+
+    pub fn children(&self) -> &[usize] {
+        &self.children
+    }
+
+    pub fn node_type(&self) -> &NodeType {
+        &self.node_type
+    }
+
+    /// Metadatos Runa del archivo (solo nodos `File` válidos).
+    pub fn metadata(&self) -> Option<&FileMetadata> {
+        self.metadata.as_ref()
+    }
+
+    /// Texto del método HTTP para la UI, o cadena vacía en directorios.
+    pub fn method_label(&self) -> &'static str {
+        self.metadata
+            .as_ref()
+            .map(|m| m.method().as_str())
+            .unwrap_or("")
+    }
+}
+
 #[derive(Debug)]
 pub enum NodeType {
     Directory,
@@ -88,6 +133,30 @@ impl Tree {
             root, files: Vec::new()
         }
     }
+
+    /// Ruta raíz del proyecto Runa (directorio con `.runa`).
+    pub fn root_path(&self) -> &PathBuf {
+        &self.root
+    }
+
+    /// Todos los nodos del árbol (índice = id interno).
+    pub fn nodes(&self) -> &[Node] {
+        &self.files
+    }
+
+    pub fn node(&self, idx: usize) -> Option<&Node> {
+        self.files.get(idx)
+    }
+
+    /// Índices de nodos sin padre (raíces del bosque).
+    pub fn root_indices(&self) -> impl Iterator<Item = usize> + '_ {
+        self.files
+            .iter()
+            .enumerate()
+            .filter(|(_, n)| n.parent.is_none())
+            .map(|(i, _)| i)
+    }
+
     pub fn add_node (&mut self, parent: Option<usize>, filename: String, node_type: NodeType, metadata: Option<FileMetadata>) -> usize {
 
         let idx = self.files.len();

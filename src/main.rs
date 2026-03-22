@@ -1,5 +1,5 @@
-use log::{error, info};
-use runa::filesystem::read_files;
+use log::error;
+use runa::ui::run_ui;
 
 fn main() {
     dotenv::dotenv().ok();
@@ -9,12 +9,8 @@ fn main() {
         .nth(1)
         .unwrap_or_else(|| ".".to_string());
 
-    let result = read_files(&base);
-    match result {
-        Ok(content) => { info!("{:#?}", content) },
-        Err(err) => {
-            error!("Error: {}", err);
-            std::process::exit(1);
-        }
+    if let Err(e) = run_ui(&base) {
+        error!("Error en la UI: {}", e);
+        std::process::exit(1);
     }
 }

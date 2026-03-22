@@ -1,0 +1,20 @@
+.root {
+  flex: 1;
+  padding: 2rem 2.5rem;
+  background: var(--color-surface-container-low);
+  min-height: 0;
+}
+
+.title {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.desc {
+  margin: 0;
+  max-width: 40rem;
+  color: var(--color-on-surface-variant);
+  line-height: 1.5;
+}

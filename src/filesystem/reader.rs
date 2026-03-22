@@ -1,8 +1,7 @@
-use std::fmt::Debug;
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
-use log::{debug, error, info};
+use log::{debug, info};
 use crate::collection::validate;
 use crate::models::files::NodeType;
 use crate::models::Tree;
@@ -13,7 +12,7 @@ fn dir_has_runa_marker(dir: &Path) -> bool {
     dir.join(RUNA_MARKER).is_file()
 }
 
-fn process_files_in_dir(dir: &Path, base: &Path, tree: &mut Tree, dir_idx: usize) -> io::Result<()> {
+fn process_files_in_dir(dir: &Path, _base: &Path, tree: &mut Tree, dir_idx: usize) -> io::Result<()> {
     let entries = fs::read_dir(dir)?;
     let mut items: Vec<_> = entries.collect::<Result<_, _>>()?;
     items.sort_by_key(|e| e.file_name());
@@ -30,7 +29,7 @@ fn process_files_in_dir(dir: &Path, base: &Path, tree: &mut Tree, dir_idx: usize
                     let nombre = path
                         .file_name()
                         .map(|n| n.to_string_lossy())
-                        .unwrap_or_else(|| "".into());;
+                        .unwrap_or_else(|| "".into());
                     tree.add_node(Some(dir_idx), nombre.into_owned(), NodeType::File, Some(m));
                 }
                 Err(_) => { debug! ("Invalid file: {}", path.display()) }
@@ -51,7 +50,7 @@ fn walk_tree<P: AsRef<Path>>(dir_path: P, base: &Path, tree: &mut Tree, parent: 
         let directory = name
             .file_name()
             .map(|n| n.to_string_lossy())
-            .unwrap_or_else(|| "".into());;
+            .unwrap_or_else(|| "".into());
         let dir_idx = tree.add_node(parent, directory.into_owned(), NodeType::Directory, None);
         debug!("{}/", name.display());
         process_files_in_dir(dir, dir, tree, dir_idx)?;

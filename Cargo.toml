@@ -4,6 +4,11 @@ version = "0.1.0"
 edition = "2024"
 description = "A collaborative API tester"
 
+[workspace]
+members = ["src-tauri"]
+resolver = "2"
+default-members = ["src-tauri"]
+
 [dependencies]
 serde = { version = "1.0.228", features = ["derive"] }
 serde_yaml = "0.9.34"

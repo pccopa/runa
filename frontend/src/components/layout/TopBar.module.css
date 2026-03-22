@@ -1,0 +1,111 @@
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--layout-topbar-height);
+  padding: 0 1.25rem;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-hairline);
+  background: var(--color-surface);
+  font-size: var(--text-body);
+  letter-spacing: -0.02em;
+  z-index: 50;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.brand {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--color-on-surface);
+  letter-spacing: -0.04em;
+}
+
+.nav {
+  display: none;
+  align-items: stretch;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+@media (min-width: 768px) {
+  .nav {
+    display: flex;
+  }
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  padding: 0 0.125rem;
+  border-bottom: 2px solid transparent;
+  color: var(--color-on-surface-variant);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.navLink:hover {
+  color: var(--color-on-surface);
+  background: color-mix(in srgb, var(--color-surface-container-high) 40%, transparent);
+}
+
+.navLinkActive {
+  color: var(--color-primary);
+  font-weight: 600;
+  border-bottom-color: var(--color-primary);
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.searchWrap {
+  position: relative;
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .searchWrap {
+    display: block;
+  }
+}
+
+.search {
+  width: 16rem;
+  padding-right: 2rem;
+  background: var(--color-surface-container-lowest);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: var(--text-body);
+}
+
+.search:focus {
+  border-color: color-mix(in srgb, var(--color-primary) 25%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-primary) 15%, transparent);
+}
+
+.searchIcon {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.searchWrap:focus-within .searchIcon {
+  opacity: 0.9;
+}
+
+.iconGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}

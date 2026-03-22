@@ -1,0 +1,228 @@
+/* Panel compartido: cabecera, selector de tipo y área de editor (request / response). */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  background: var(--color-surface-container-low);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  flex-shrink: 0;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border-hairline);
+  background: color-mix(in srgb, var(--color-surface-container) 35%, transparent);
+}
+
+.title {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-on-surface-variant) 8%, transparent);
+}
+
+.typeBadge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-hairline);
+  background: var(--color-surface-container);
+  color: var(--color-on-surface-variant);
+}
+
+.meta {
+  font-size: 0.6875rem;
+  color: var(--color-on-surface-variant);
+  font-family: var(--font-mono);
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: var(--color-primary-container);
+  color: var(--color-primary);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 22%, transparent);
+}
+
+.statusOk {
+  background: color-mix(in srgb, var(--color-status-online) 14%, transparent);
+  color: var(--color-status-online);
+  border-color: color-mix(in srgb, var(--color-status-online) 35%, transparent);
+}
+
+.segmentWrap {
+  flex-shrink: 0;
+  padding: 0.4rem 0.75rem 0.5rem;
+  border-bottom: 1px solid var(--border-hairline);
+  background: var(--color-surface-container-low);
+}
+
+.segment {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.3rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-hairline);
+  background: var(--color-surface-container);
+}
+
+.segmentLabel {
+  flex: 1;
+  min-width: 4.5rem;
+  text-align: center;
+  margin: 0;
+  cursor: pointer;
+}
+
+.segmentInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.segmentText {
+  display: block;
+  padding: 0.45rem 0.4rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant);
+  border: 1px solid transparent;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.segmentLabel:hover .segmentText {
+  color: var(--color-on-surface);
+  background: var(--color-surface-container-high);
+}
+
+.segmentInput:focus-visible + .segmentText {
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.segmentInput:checked + .segmentText {
+  color: var(--color-primary);
+  background: var(--color-primary-container);
+  border-color: color-mix(in srgb, var(--color-primary) 35%, transparent);
+}
+
+.editorShell {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.editorBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  margin: 0;
+  padding: 0.65rem 0.75rem 0.85rem 0;
+  background: var(--color-surface-container-lowest);
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  line-height: 1.5;
+  color: var(--color-primary-fixed-dim);
+}
+
+.textarea {
+  display: block;
+  flex: 1;
+  width: 100%;
+  min-height: 6rem;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border: none;
+  resize: none;
+  background: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  line-height: 1.5;
+  outline: none;
+}
+
+.textarea:focus {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.emptyBody {
+  margin: 0;
+  padding: 0.85rem 0.75rem;
+  font-size: var(--text-small);
+  color: var(--color-on-surface-variant);
+  line-height: 1.45;
+}
+
+.formHint {
+  margin: 0 0 0.65rem;
+  padding: 0 0.75rem;
+  font-size: 0.6875rem;
+  color: var(--color-on-surface-variant);
+  line-height: 1.4;
+}
+
+.tableScroll {
+  flex: 1;
+  min-height: 0;
+  padding: 0 0.75rem 0.75rem;
+  overflow: auto;
+}
+
+.lineNums {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lineRow {
+  display: table-row;
+}
+
+.lineNo {
+  display: table-cell;
+  width: 2.25rem;
+  padding: 0 0.5rem 0 0.75rem;
+  text-align: right;
+  user-select: none;
+  color: color-mix(in srgb, var(--color-on-surface-variant) 45%, transparent);
+  font-size: 0.6875rem;
+  vertical-align: top;
+}
+
+.lineCode {
+  display: table-cell;
+  padding: 0;
+  white-space: pre;
+  color: var(--color-primary-fixed-dim);
+}

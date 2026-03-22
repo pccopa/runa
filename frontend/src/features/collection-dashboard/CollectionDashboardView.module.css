@@ -1,0 +1,95 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+.workspace {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: stretch;
+  min-height: 0;
+  min-width: 0;
+}
+
+.treeColumn {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  height: 100%;
+}
+
+.treeColumnTree {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.resizeHandle {
+  flex-shrink: 0;
+  width: 6px;
+  margin: 0 -1px;
+  cursor: col-resize;
+  background: transparent;
+  position: relative;
+  z-index: 1;
+  transition: background 0.12s ease;
+}
+
+.resizeHandle:hover,
+.resizeHandle:focus-visible {
+  outline: none;
+  background: color-mix(in srgb, var(--color-primary) 28%, transparent);
+}
+
+.resizeHandle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  left: -4px;
+  right: -4px;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.banner {
+  flex-shrink: 0;
+  padding: 0.5rem 1.25rem;
+  font-size: var(--text-small);
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+.bannerError {
+  background: color-mix(in srgb, var(--color-error) 12%, transparent);
+  color: var(--color-on-error-container);
+}
+
+.bannerLoading {
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  color: var(--color-on-surface-variant);
+}
+
+.pathHint {
+  margin: 0;
+  font-size: 0.625rem;
+  font-family: var(--font-mono);
+  color: var(--color-on-surface-variant);
+  opacity: 0.85;
+  padding: 0 1.25rem 0.35rem;
+  flex-shrink: 0;
+}

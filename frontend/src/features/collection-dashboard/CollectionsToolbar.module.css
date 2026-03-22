@@ -1,0 +1,90 @@
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 3rem;
+  padding: 0 1.5rem;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-hairline);
+  background: color-mix(in srgb, var(--color-surface-container-high) 35%, transparent);
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-surface-container-highest) 45%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 12%, transparent);
+}
+
+.chipIcon {
+  font-size: 1rem;
+  color: var(--color-primary);
+}
+
+.chipLabel {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant);
+}
+
+.sep {
+  width: 1px;
+  height: 1rem;
+  background: color-mix(in srgb, var(--color-outline-variant) 22%, transparent);
+}
+
+.filter {
+  width: 12rem;
+  min-width: 0;
+  padding-left: 0;
+  font-size: var(--text-small);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.textBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-on-surface);
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.textBtn:hover {
+  background: var(--color-surface-bright);
+}
+
+.textBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.textBtn .material-symbols-outlined {
+  font-size: 1.1rem;
+}
