@@ -182,16 +182,26 @@
   flex: 1 1 auto;
   min-width: min-content;
   padding: 0.28rem 0.35rem 0.28rem 0.15rem;
+  border: none;
   border-radius: var(--radius-sm);
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
   text-decoration: none;
   color: var(--color-on-surface-variant);
   font-size: var(--text-small);
   transition: color 0.15s ease, background 0.15s ease;
 }
 
-.requestRow:hover {
+.requestRow:hover:not(:disabled) {
   color: var(--color-on-surface);
   background: color-mix(in srgb, var(--color-surface-container-high) 55%, transparent);
+}
+
+.requestRow:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .requestPath {

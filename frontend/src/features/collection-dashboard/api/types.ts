@@ -10,6 +10,8 @@ export type CollectionNodeDto = {
   displayName?: string;
   order?: number;
   method?: string;
+  /** Ruta relativa al proyecto; solo `file`. */
+  relativePath?: string;
 };
 
 export type CollectionTreeDto = {

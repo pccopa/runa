@@ -7,13 +7,17 @@ use thiserror::Error;
 
 #[derive(Debug, Deserialize)]
 pub struct File {
-    uri: String,
-    headers: Vec<(String, String)>,
-    params: Vec<(String, String)>,
-    method: Method,
-    body: Option<Value>,
-    documentation: Option<String>,
-
+    #[serde(default)]
+    pub uri: String,
+    #[serde(default)]
+    pub headers: Vec<(String, String)>,
+    #[serde(default)]
+    pub params: Vec<(String, String)>,
+    pub method: Method,
+    #[serde(default)]
+    pub body: Option<Value>,
+    #[serde(default)]
+    pub documentation: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -173,4 +177,20 @@ impl Tree {
         idx
     }
 
+    /// Ruta relativa al directorio raíz del proyecto (segmentos con `/`), solo para nodos `File`.
+    pub fn node_relative_path(&self, idx: usize) -> Option<String> {
+        let node = self.node(idx)?;
+        if !matches!(node.node_type(), NodeType::File) {
+            return None;
+        }
+        let mut parts: Vec<&str> = Vec::new();
+        let mut cur = Some(idx);
+        while let Some(i) = cur {
+            let n = self.node(i)?;
+            parts.push(n.filename());
+            cur = n.parent();
+        }
+        parts.reverse();
+        Some(parts.join("/"))
+    }
 }

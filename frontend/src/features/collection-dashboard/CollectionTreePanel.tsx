@@ -1,7 +1,8 @@
 import { useState, type CSSProperties } from "react";
-import { Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { MethodBadge } from "@/components/ui/MethodBadge";
 import type { CollectionTreeNode } from "@/features/collection-dashboard/model/tree";
+import { useRequestWorkspace } from "@/features/request-editor/RequestWorkspaceContext";
 import styles from "./CollectionTreePanel.module.css";
 
 /** Máscara de guías (solo si `showTreeConnectors`). */
@@ -86,6 +87,19 @@ function TreeRequest({
   showTreeConnectors: boolean;
   lineMask: LineMask;
 }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { openRequestFromTree } = useRequestWorkspace();
+  const canOpen = Boolean(node.relativePath?.trim());
+
+  const onActivate = async () => {
+    if (!canOpen) return;
+    await openRequestFromTree(node);
+    if (location.pathname !== "/request") {
+      navigate("/request");
+    }
+  };
+
   return (
     <div
       className={[styles.rowLine, !showTreeConnectors && styles.rowLinePlain].filter(Boolean).join(" ")}
@@ -96,10 +110,16 @@ function TreeRequest({
       }
     >
       {showTreeConnectors ? <TreeGuides lineMask={lineMask} /> : null}
-      <Link to="/request" className={styles.requestRow} state={{ fromTree: node.id }}>
+      <button
+        type="button"
+        className={styles.requestRow}
+        disabled={!canOpen}
+        title={canOpen ? "Abrir request" : "Sin ruta de archivo"}
+        onClick={() => void onActivate()}
+      >
         <MethodBadge method={node.method} />
         <span className={`mono ${styles.requestPath}`}>{node.path}</span>
-      </Link>
+      </button>
     </div>
   );
 }

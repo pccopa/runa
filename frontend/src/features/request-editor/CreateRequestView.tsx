@@ -1,74 +1,86 @@
 import { useCallback, useId, useMemo, useRef, useState } from "react";
 import type { HttpMethod } from "@/components/ui/MethodBadge";
-import { HTTP_METHODS } from "@/components/ui/MethodBadge";
+import { HttpMethodSelect } from "@/components/ui/HttpMethodSelect";
+import { MethodBadge } from "@/components/ui/MethodBadge";
 import { AuthorizationPanel } from "./AuthorizationPanel";
-import { authIsConfigured, defaultAuthConfig } from "./authorizationTypes";
-import { applyKvPatch, newKvRow, type KvRow } from "./kvRows";
+import { authIsConfigured, type AuthConfig } from "./authorizationTypes";
+import { applyKvPatch, type KvRow } from "./kvRows";
 import { KeyValueTable } from "./KeyValueTable";
 import { RequestBodyPanel } from "./RequestBodyPanel";
-import { bodyHasPayload, defaultRequestBody } from "./requestBodyTypes";
+import { bodyHasPayload, type RequestBodyState } from "./requestBodyTypes";
+import { useRequestWorkspace } from "./RequestWorkspaceContext";
+import type { SectionTab } from "./requestWorkspaceTypes";
 import { ResponsePayloadPanel } from "./ResponsePayloadPanel";
 import styles from "./CreateRequestView.module.css";
 
-type SectionTab = "params" | "authorization" | "headers" | "body" | "settings";
-
-const MOCK_JSON_LINES = [
-  "{",
-  '  "id": "usr_8f2a",',
-  '  "email": "architect@example.com",',
-  '  "display_name": "Architect_One",',
-  '  "role": "admin",',
-  '  "active": true,',
-  '  "plan": {',
-  '    "tier": "enterprise",',
-  '    "seats": 42',
-  "  }",
-  "}",
-];
-
 const SPLITTER_PX = 3;
-/** Porcentaje del ancho útil (sin separador) asignado al panel de request; el response recibe el resto. */
 const MIN_REQUEST_PCT = 18;
 const MAX_REQUEST_PCT = 82;
 
 export function CreateRequestView() {
   const methodId = useId();
-  const [openTabs] = useState(() => [
-    { id: "t1", method: "GET" as HttpMethod, title: "Fetch User Profile" },
-    { id: "t2", method: "POST" as HttpMethod, title: "Update Auth" },
-  ]);
-  const [activeTabId, setActiveTabId] = useState("t1");
-  const [method, setMethod] = useState<HttpMethod>("GET");
-  const [urlPath, setUrlPath] = useState("/api/v2/users/me");
-  const [section, setSection] = useState<SectionTab>("params");
-  const [params, setParams] = useState<KvRow[]>([
-    { id: "p1", key: "include_details", value: "true", active: true },
-    { id: "p2", key: "api_version", value: "v2.0.4", active: true },
-    newKvRow(),
-  ]);
-  const [headers, setHeaders] = useState<KvRow[]>([
-    { id: "h1", key: "Accept", value: "application/json", active: true },
-    newKvRow(),
-  ]);
-  const [auth, setAuth] = useState(defaultAuthConfig);
-  const [requestBody, setRequestBody] = useState(defaultRequestBody);
+  const {
+    tabs,
+    activeTabId,
+    activeSnapshot,
+    hasActiveTab,
+    openError,
+    clearOpenError,
+    selectTab,
+    closeTab,
+    updateActiveSnapshot,
+  } = useRequestWorkspace();
+
   const [requestPanelPct, setRequestPanelPct] = useState(50);
   const [splitDragging, setSplitDragging] = useState(false);
   const workspaceRef = useRef<HTMLDivElement>(null);
+
+  const method = activeSnapshot.method;
+  const urlPath = activeSnapshot.urlPath;
+  const section = activeSnapshot.section;
+  const params = activeSnapshot.params;
+  const headers = activeSnapshot.headers;
+  const auth = activeSnapshot.auth;
+  const requestBody = activeSnapshot.requestBody;
 
   const hasHeaderDot = useMemo(() => headers.some((h) => h.key.trim() && h.active), [headers]);
   const hasAuthorizationDot = useMemo(() => authIsConfigured(auth), [auth]);
   const hasBodyDot = useMemo(() => bodyHasPayload(requestBody), [requestBody]);
 
-  const mockResponseRaw = useMemo(() => MOCK_JSON_LINES.join("\n"), []);
+  const setMethod = useCallback(
+    (m: HttpMethod) => updateActiveSnapshot((s) => ({ ...s, method: m })),
+    [updateActiveSnapshot],
+  );
+  const setUrlPath = useCallback(
+    (v: string) => updateActiveSnapshot((s) => ({ ...s, urlPath: v })),
+    [updateActiveSnapshot],
+  );
+  const setSection = useCallback(
+    (sec: SectionTab) => updateActiveSnapshot((s) => ({ ...s, section: sec })),
+    [updateActiveSnapshot],
+  );
+  const setAuth = useCallback(
+    (next: AuthConfig) => updateActiveSnapshot((s) => ({ ...s, auth: next })),
+    [updateActiveSnapshot],
+  );
+  const setRequestBody = useCallback(
+    (next: RequestBodyState) => updateActiveSnapshot((s) => ({ ...s, requestBody: next })),
+    [updateActiveSnapshot],
+  );
 
-  const updateParam = (id: string, patch: Partial<KvRow>) => {
-    setParams((rows) => applyKvPatch(rows, id, patch));
-  };
+  const updateParam = useCallback(
+    (id: string, patch: Partial<KvRow>) => {
+      updateActiveSnapshot((s) => ({ ...s, params: applyKvPatch(s.params, id, patch) }));
+    },
+    [updateActiveSnapshot],
+  );
 
-  const updateHeader = (id: string, patch: Partial<KvRow>) => {
-    setHeaders((rows) => applyKvPatch(rows, id, patch));
-  };
+  const updateHeader = useCallback(
+    (id: string, patch: Partial<KvRow>) => {
+      updateActiveSnapshot((s) => ({ ...s, headers: applyKvPatch(s.headers, id, patch) }));
+    },
+    [updateActiveSnapshot],
+  );
 
   const handleSplitPointerDown = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
@@ -124,26 +136,54 @@ export function CreateRequestView() {
 
   return (
     <div className={styles.root}>
-      <div className={styles.tabStrip} role="tablist" aria-label="Pestañas de petición">
-        {openTabs.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            role="tab"
-            aria-selected={t.id === activeTabId}
-            className={t.id === activeTabId ? `${styles.tab} ${styles.tabActive}` : styles.tab}
-            onClick={() => {
-              setActiveTabId(t.id);
-              setMethod(t.method);
-            }}
-          >
-            <span className={styles.methodTag}>{t.method}</span>
-            <span>{t.title}</span>
+      {openError ? (
+        <div className={styles.openErrorBanner} role="alert">
+          <span>{openError}</span>
+          <button type="button" className={styles.openErrorDismiss} onClick={clearOpenError} aria-label="Cerrar aviso">
+            <span className="material-symbols-outlined" aria-hidden>
+              close
+            </span>
           </button>
-        ))}
-        <button type="button" className={styles.tabAdd} aria-label="Nueva pestaña">
-          +
-        </button>
+        </div>
+      ) : null}
+
+      <div className={styles.tabStrip} role="tablist" aria-label="Requests abiertos">
+        {tabs.length === 0 ? (
+          <span className={styles.tabStripHint}>Ningún request abierto — elige uno en el árbol.</span>
+        ) : (
+          tabs.map((t) => (
+            <div
+              key={t.id}
+              className={[styles.tabSlot, t.id === activeTabId ? styles.tabSlotActive : ""]
+                .filter(Boolean)
+                .join(" ")}
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={t.id === activeTabId}
+                className={styles.tabMain}
+                onClick={() => selectTab(t.id)}
+              >
+                <MethodBadge method={t.snapshot.method} />
+                <span className={styles.tabTitle}>{t.title}</span>
+              </button>
+              <button
+                type="button"
+                className={styles.tabClose}
+                aria-label={`Cerrar ${t.title}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  closeTab(t.id);
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden>
+                  close
+                </span>
+              </button>
+            </div>
+          ))
+        )}
       </div>
 
       <div className={styles.body}>
@@ -155,96 +195,91 @@ export function CreateRequestView() {
           }}
         >
           <div className={styles.requestPane}>
-            <div className={styles.urlRow}>
-              <div className={styles.methodSelectWrap}>
-                <label htmlFor={methodId} className="sr-only">
-                  Método HTTP
-                </label>
-                <select
-                  id={methodId}
-                  className={styles.methodSelect}
-                  value={method}
-                  onChange={(e) => setMethod(e.target.value as HttpMethod)}
-                >
-                  {HTTP_METHODS.map((m) => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
+            {!hasActiveTab ? (
+              <div className={styles.noTab}>
+                <p className={styles.noTabText}>
+                  Selecciona un archivo de request en el árbol de la izquierda para cargar método, URL, cabeceras,
+                  parámetros y cuerpo.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className={styles.urlRow}>
+                  <label htmlFor={methodId} className="sr-only">
+                    Método HTTP
+                  </label>
+                  <HttpMethodSelect id={methodId} value={method} onChange={setMethod} />
+                  <div className={styles.urlField}>
+                    <span className={styles.varChip} title="Variable de entorno">
+                      {"{{base_url}}"}
+                    </span>
+                    <input
+                      className={styles.urlInput}
+                      type="text"
+                      value={urlPath}
+                      onChange={(e) => setUrlPath(e.target.value)}
+                      placeholder="/ruta"
+                      spellCheck={false}
+                      autoComplete="off"
+                      aria-label="Ruta o URL"
+                    />
+                  </div>
+                  <button type="button" className={styles.sendBtn}>
+                    Enviar
+                  </button>
+                </div>
+
+                <div className={styles.sectionTabs} role="tablist" aria-label="Sección de la petición">
+                  {(
+                    [
+                      ["params", "Params"],
+                      ["authorization", "Authorization"],
+                      ["headers", "Headers"],
+                      ["body", "Body"],
+                      ["settings", "Settings"],
+                    ] as const
+                  ).map(([key, label]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      role="tab"
+                      aria-selected={section === key}
+                      className={[
+                        styles.sectionTab,
+                        section === key ? styles.sectionTabActive : "",
+                        key === "headers" && hasHeaderDot ? styles.sectionTabDot : "",
+                        key === "authorization" && hasAuthorizationDot ? styles.sectionTabDot : "",
+                        key === "body" && hasBodyDot ? styles.sectionTabDot : "",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                      onClick={() => setSection(key)}
+                    >
+                      {label}
+                    </button>
                   ))}
-                </select>
-                <span className={`material-symbols-outlined ${styles.chevron}`} aria-hidden>
-                  expand_more
-                </span>
-              </div>
-              <div className={styles.urlField}>
-                <span className={styles.varChip} title="Variable de entorno">
-                  {"{{base_url}}"}
-                </span>
-                <input
-                  className={styles.urlInput}
-                  type="text"
-                  value={urlPath}
-                  onChange={(e) => setUrlPath(e.target.value)}
-                  placeholder="/ruta"
-                  spellCheck={false}
-                  autoComplete="off"
-                  aria-label="Ruta o URL"
-                />
-              </div>
-              <button type="button" className={styles.sendBtn}>
-                Enviar
-              </button>
-            </div>
+                </div>
 
-            <div className={styles.sectionTabs} role="tablist" aria-label="Sección de la petición">
-              {(
-                [
-                  ["params", "Params"],
-                  ["authorization", "Authorization"],
-                  ["headers", "Headers"],
-                  ["body", "Body"],
-                  ["settings", "Settings"],
-                ] as const
-              ).map(([key, label]) => (
-                <button
-                  key={key}
-                  type="button"
-                  role="tab"
-                  aria-selected={section === key}
-                  className={[
-                    styles.sectionTab,
-                    section === key ? styles.sectionTabActive : "",
-                    key === "headers" && hasHeaderDot ? styles.sectionTabDot : "",
-                    key === "authorization" && hasAuthorizationDot ? styles.sectionTabDot : "",
-                    key === "body" && hasBodyDot ? styles.sectionTabDot : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  onClick={() => setSection(key)}
+                <div
+                  className={section === "body" ? styles.sectionBodyTight : styles.sectionBody}
+                  data-section={section}
                 >
-                  {label}
-                </button>
-              ))}
-            </div>
-
-            <div
-              className={section === "body" ? styles.sectionBodyTight : styles.sectionBody}
-              data-section={section}
-            >
-              {section === "params" && (
-                <KeyValueTable rows={params} onChange={updateParam} valueAccentWhen="true" />
-              )}
-              {section === "headers" && (
-                <KeyValueTable rows={headers} onChange={updateHeader} valueAccentWhen={null} />
-              )}
-              {section === "authorization" && <AuthorizationPanel value={auth} onChange={setAuth} />}
-              {section === "body" && (
-                <RequestBodyPanel value={requestBody} onChange={setRequestBody} />
-              )}
-              {section === "settings" && (
-                <p className={styles.placeholderSection}>Ajustes de la petición (próximamente).</p>
-              )}
-            </div>
+                  {section === "params" && (
+                    <KeyValueTable rows={params} onChange={updateParam} valueAccentWhen="true" />
+                  )}
+                  {section === "headers" && (
+                    <KeyValueTable rows={headers} onChange={updateHeader} valueAccentWhen={null} />
+                  )}
+                  {section === "authorization" && <AuthorizationPanel value={auth} onChange={setAuth} />}
+                  {section === "body" && (
+                    <RequestBodyPanel value={requestBody} onChange={setRequestBody} />
+                  )}
+                  {section === "settings" && (
+                    <p className={styles.placeholderSection}>Ajustes de la petición (próximamente).</p>
+                  )}
+                </div>
+              </>
+            )}
           </div>
 
           <div
@@ -258,14 +293,7 @@ export function CreateRequestView() {
           />
 
           <div className={styles.responsePane}>
-            <ResponsePayloadPanel
-              statusLine="200 OK"
-              timeMs={124}
-              sizeLabel="1.4 KB"
-              contentType="application/json; charset=utf-8"
-              bodyLines={MOCK_JSON_LINES}
-              rawText={mockResponseRaw}
-            />
+            <ResponsePayloadPanel empty />
           </div>
         </div>
       </div>

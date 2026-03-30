@@ -4,6 +4,7 @@ import { CollectionTreePanel } from "@/features/collection-dashboard/CollectionT
 import { CollectionsToolbar } from "@/features/collection-dashboard/CollectionsToolbar";
 import { FavoritesPanel } from "@/features/collection-dashboard/FavoritesPanel";
 import { useCollectionTree } from "@/features/collection-dashboard/hooks/useCollectionTree";
+import { RequestWorkspaceProvider } from "@/features/request-editor/RequestWorkspaceContext";
 import styles from "./CollectionDashboardView.module.css";
 
 const TREE_DEFAULT_PX = 280;
@@ -65,6 +66,7 @@ export function CollectionWorkspaceLayout({ showTreeConnectors: showLinesProp }:
   };
 
   return (
+    <RequestWorkspaceProvider projectPath={rootPath}>
     <div className={styles.root}>
       <CollectionsToolbar onRefresh={reload} refreshDisabled={loading} />
       {rootPath ? (
@@ -102,5 +104,6 @@ export function CollectionWorkspaceLayout({ showTreeConnectors: showLinesProp }:
         </main>
       </div>
     </div>
+    </RequestWorkspaceProvider>
   );
 }

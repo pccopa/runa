@@ -9,7 +9,10 @@ const VIEW_OPTIONS: { value: ResponseBodyView; label: string }[] = [
   { value: "raw", label: "Bruto" },
 ];
 
-type Props = {
+type PropsEmpty = { empty: true };
+
+type PropsWithBody = {
+  empty?: false;
   statusLine: string;
   timeMs: number;
   sizeLabel: string;
@@ -18,8 +21,28 @@ type Props = {
   rawText: string;
 };
 
-export function ResponsePayloadPanel({ statusLine, timeMs, sizeLabel, contentType, bodyLines, rawText }: Props) {
+type Props = PropsEmpty | PropsWithBody;
+
+export function ResponsePayloadPanel(props: Props) {
   const [view, setView] = useState<ResponseBodyView>("json");
+
+  if ("empty" in props && props.empty) {
+    return (
+      <div className={hp.root}>
+        <div className={hp.head}>
+          <span className={hp.title}>Respuesta</span>
+          <span className={hp.typeBadge}>—</span>
+        </div>
+        <div className={hp.editorShell}>
+          <p className={hp.emptyBody}>
+            Aún no hay respuesta. El envío de la petición y la visualización del cuerpo se conectarán después.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const { statusLine, timeMs, sizeLabel, contentType, bodyLines, rawText } = props;
 
   return (
     <div className={hp.root}>

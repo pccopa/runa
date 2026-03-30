@@ -7,75 +7,144 @@
   background: var(--color-surface-container-low);
 }
 
+.openErrorBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  padding: 0.45rem 0.75rem;
+  font-size: var(--text-small);
+  background: color-mix(in srgb, var(--color-error) 14%, transparent);
+  color: var(--color-on-error-container);
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+.openErrorDismiss {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.15rem;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.openErrorDismiss:hover {
+  background: color-mix(in srgb, var(--color-on-error-container) 12%, transparent);
+}
+
 .tabStrip {
   display: flex;
   align-items: flex-end;
-  gap: 0.125rem;
+  flex-wrap: wrap;
+  gap: 0.2rem;
   flex-shrink: 0;
   padding: 0 0.5rem;
   background: var(--color-background);
   border-bottom: 1px solid var(--border-hairline);
 }
 
-.tab {
+.tabStripHint {
+  padding: 0.55rem 0.5rem 0.7rem;
+  font-size: var(--text-small);
+  color: var(--color-on-surface-variant);
+}
+
+.tabSlot {
+  display: inline-flex;
+  align-items: stretch;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  margin-bottom: -1px;
+}
+
+.tabSlotActive {
+  background: var(--color-surface-container-low);
+  border-color: var(--border-hairline);
+  border-top: 2px solid var(--color-primary);
+}
+
+.tabMain {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem 0.65rem;
+  gap: 0.45rem;
+  padding: 0.5rem 0.35rem 0.65rem 0.75rem;
   margin: 0;
   border: none;
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  border-radius: var(--radius-md) 0 0 0;
   background: transparent;
   color: var(--color-on-surface-variant);
   font: inherit;
   font-size: var(--text-small);
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease;
+  transition: color 0.12s ease;
+  max-width: 14rem;
 }
 
-.tab:hover {
+.tabSlotActive .tabMain {
   color: var(--color-on-surface);
-  background: color-mix(in srgb, var(--color-surface-container) 50%, transparent);
 }
 
-.tabActive {
+.tabMain:hover {
   color: var(--color-on-surface);
-  background: var(--color-surface-container-low);
-  border-top: 2px solid var(--color-primary);
-  padding-top: calc(0.5rem - 2px);
 }
 
-.methodTag {
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  padding: 0.15rem 0.4rem;
-  border-radius: 999px;
-  background: var(--color-primary-container);
-  color: var(--color-primary);
+.tabTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
-.tabAdd {
+.tabClose {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  margin-bottom: 0.35rem;
+  padding: 0.35rem 0.5rem 0.35rem 0.15rem;
+  margin: 0;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 0 var(--radius-md) 0 0;
   background: transparent;
   color: var(--color-on-surface-variant);
-  font-size: 1.25rem;
-  line-height: 1;
   cursor: pointer;
+  transition:
+    color 0.12s ease,
+    background 0.12s ease;
 }
 
-.tabAdd:hover {
-  background: var(--color-surface-container-high);
+.tabClose span {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.tabClose:hover {
   color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-surface-container-high) 40%, transparent);
+}
+
+.noTab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 12rem;
+  padding: 1.5rem;
+}
+
+.noTabText {
+  margin: 0;
+  max-width: 28rem;
+  text-align: center;
+  font-size: var(--text-small);
+  color: var(--color-on-surface-variant);
+  line-height: 1.5;
 }
 
 .body {
@@ -134,37 +203,6 @@
   padding: 0.75rem 1rem;
   background: var(--color-background);
   border-bottom: 1px solid var(--border-hairline);
-}
-
-.methodSelectWrap {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0 0.65rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-hairline);
-  background: var(--color-surface-container);
-}
-
-.methodSelect {
-  appearance: none;
-  border: none;
-  background: transparent;
-  color: var(--color-primary);
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  padding: 0.5rem 0.15rem;
-  cursor: pointer;
-  outline: none;
-}
-
-.chevron {
-  font-size: 1rem;
-  color: var(--color-on-surface-variant);
-  pointer-events: none;
 }
 
 .urlField {

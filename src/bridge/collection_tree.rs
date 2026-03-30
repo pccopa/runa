@@ -24,6 +24,8 @@ pub struct CollectionNodeDto {
     pub order: Option<i16>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub method: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub relative_path: Option<String>,
 }
 
 fn directory_label(tree: &Tree, node_filename: &str) -> String {
@@ -60,6 +62,10 @@ impl From<&Tree> for CollectionTreeDto {
                     ),
                     None => (None, None, None),
                 };
+                let relative_path = match node.node_type() {
+                    NodeType::File => tree.node_relative_path(idx),
+                    NodeType::Directory => None,
+                };
                 CollectionNodeDto {
                     index: idx,
                     parent: node.parent(),
@@ -69,6 +75,7 @@ impl From<&Tree> for CollectionTreeDto {
                     display_name,
                     order,
                     method,
+                    relative_path,
                 }
             })
             .collect();

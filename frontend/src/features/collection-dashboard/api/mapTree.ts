@@ -54,6 +54,7 @@ export function flatDtoToCollectionRoots(dto: CollectionTreeDto): CollectionTree
         id: `file-${n.index}`,
         method: parseMethod(n.method),
         path: n.displayName ?? n.filename,
+        relativePath: n.relativePath ?? "",
         sortOrder: n.order,
       });
     }

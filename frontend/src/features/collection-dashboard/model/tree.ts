@@ -14,6 +14,8 @@ export type CollectionTreeNode =
       id: string;
       method: HttpMethod;
       path: string;
+      /** Ruta relativa al directorio del proyecto (segmentos con `/`). */
+      relativePath: string;
       /** Orden Runa (`order` en YAML); solo para ordenar en el panel. */
       sortOrder?: number;
     };
